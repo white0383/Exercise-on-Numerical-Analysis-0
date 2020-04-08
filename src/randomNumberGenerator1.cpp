@@ -3,20 +3,48 @@
 
 using namespace std;
 
+#define EXPTIMES 180
+#define MAXCHAIN 30
+
 int main() {
     clock_t start = clock();
 
-    unsigned int count = 0;
+    int randNum = 0;
+    int prevNum = -1;
+    int chainCount = 1;
+    unsigned int countArr[10] = {0,}; // 0から9までの数字が何回出たかを保存しておく
+    unsigned int countChainArr[10][MAXCHAIN] = {0}; // countChainArr[i][j]: iが連続でj回出た回数
 
-    while( (clock() - start)/CLOCKS_PER_SEC < 3){
-        count ++;
+    srand((unsigned int)time(0));
+
+    while( (clock() - start)/CLOCKS_PER_SEC < EXPTIMES ) {
+        randNum = rand() % 10;
+        countArr[randNum]++;
+
+        if(randNum == prevNum){
+            chainCount++;
+        } else {
+            if(chainCount >= MAXCHAIN){
+                countChainArr[randNum][MAXCHAIN-1]++;
+            } else {
+                countChainArr[randNum][chainCount]++;
+            }
+            chainCount = 1;
+        }
+
+        prevNum = randNum;
+    };
+
+    for(int i=0;i<10;i++){
+        cout<< i << ": " << countArr[i] << " times" << endl;
     }
 
-    clock_t end = clock();
-
-    cout << "count: " << count << endl;
-    cout << "start: " << start << endl;
-    cout << "end  : " << end << endl;
-    cout << "time : " << (end - start) / CLOCKS_PER_SEC << endl;
-    cout << "tanni: " << CLOCKS_PER_SEC << endl;
-}
+    for(int i=0;i<10;i++){
+        cout << i << "\t";
+        for(int j=1;j<MAXCHAIN;j++){
+            cout<< countChainArr[i][j] << "\t";
+        }
+        cout << endl;
+    }
+    return 0;
+};
